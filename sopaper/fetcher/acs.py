@@ -51,31 +51,13 @@ class ACS(ScienceDirect):
                 pdf_url=elem.get_attribute("href")        
         browser.quit()
         display.stop()
-        print("ACS parser, url: {}",format(pdf_url))
+        print("ACS parser, url: {}".format(pdf_url))
         return pdf_url
 
     def _do_download(self, updater):
         print("_do_download")
         
         return direct_download(self._get_url(self.url), updater)
-
-        """def _do_download(self, updater):
-            
-                    print("PREACS")
-                    pdf = self.soup.findAll("a",
-                        attrs={'title': 'High-Res PDF'})
-                    print("PREACS:", pdf)
-            
-                    if pdf:
-                        try:
-                            url = pdf[0]['href']
-                            print "ACS: {}".format(url)
-                        except:
-                            # probably something need to be fixed
-                            log_exc('')
-                    else:
-                        raise RecoverableErr("No available download at {0}".format(self.url))
-                    return direct_download(url, updater)"""
 
     def _do_get_title(self):
         """class="hlFld-Title" """
