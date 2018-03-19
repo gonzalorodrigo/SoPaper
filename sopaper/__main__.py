@@ -41,6 +41,8 @@ def get_args():
                         required=False, default='.')
     parser.add_argument('-o', '--output',
                         help='Manually specify a output file, rather than automatically determine the correct name.')
+    parser.add_argument('-f', '--force', action='store_true',
+                        help='If file exists, it will be over-written.')
     ret = parser.parse_args()
     ret.title = ' '.join(ret.title)
     return ret
@@ -50,6 +52,7 @@ def main():
     args = get_args()
     query = args.title.strip()
     directory = args.directory
+    force_write = args.force
 
 
     searchers = searcher.register_searcher.get_searcher_list()
@@ -114,7 +117,7 @@ def main():
         data = pdf_compress(data)
 
         filename = os.path.join(directory, ctx.title + ".pdf")
-        if os.path.exists(filename):
+        if not force_write and os.path.exists(filename):
             log_err("File \"{}\" exists! overwrite? (y/n)".format(os.path.basename(filename)))
             resp = raw_input()
             if resp not in ['y', 'Y']:

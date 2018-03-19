@@ -10,6 +10,7 @@ from .base import FetcherBase, direct_download
 from ..uklogger import *
 from .. import ukconfig
 
+
 from urlparse import urlparse
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +27,7 @@ class ScienceDirect(FetcherBase):
         with open("/tmp/b.html", 'w') as f:
             f.write(self.text)
         #text = open("/tmp/b.html").read()
-        self.soup = BeautifulSoup(self.text)
+        self.soup = BeautifulSoup(self.text, "html.parser")
 
     def _do_download(self, updater):
         pdf = self.soup.findAll(attrs={'id': 'pdfLink'})

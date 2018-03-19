@@ -34,7 +34,9 @@ def sanitize_path_fragment(
         additional_illegal_characters=[],
     ):
     # Enforce that these args are unicode strings
+    original_fragment=unicode(original_fragment)
     unicode_args = [original_fragment, filename_extension, replacement] + additional_illegal_characters
+    print("JJJJ", unicode_args)
     if not _are_unicode(unicode_args):
         raise ValueError(
                 '`original_fragment`, `filename_extension`, `replacement`, and `additional_illegal_characters` '
