@@ -25,16 +25,23 @@ class IEEE(FetcherBase):
     def _do_pre_parse(self):
         text = requests.get(self.url).text.encode('utf-8')
         self.soup = BeautifulSoup(text, BS_PARSER)
-
-        number = re.findall('arnumber=[0-9]*', self.url)[0]
-        self.number = re.findall('[0-9]+', number)[0]
+        numbers = re.findall('arnumber=[0-9]*', self.url)
+        if numbers:
+            number = re.findall('arnumber=[0-9]*', self.url)[0]
+            self.number = re.findall('[0-9]+', number)[0]
+        else:
+            self.number=""
 
     def _do_download(self, updater):
         url2 = STAMP_URL.format(self.number)
         text = requests.get(url2).text.encode('utf-8')
         soup = BeautifulSoup(text, BS_PARSER)
-        fr = soup.findAll('frame')[-1]
-        pdflink = fr.get('src')
+        fr_list = soup.findAll('frame')
+        if fr_list:
+            fr = soup.findAll('frame')[-1]
+            pdflink = fr.get('src')
+        else:
+            pdflink=""
         return direct_download(pdflink, updater)
 
     def _do_get_title(self):
