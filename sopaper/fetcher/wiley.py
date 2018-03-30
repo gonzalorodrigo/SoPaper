@@ -74,6 +74,7 @@ class WILEY(ScienceDirect):
 
     def _do_get_title(self):
         """class="hlFld-Title" """
+        return ""
         titles = self.soup.findAll(attrs={'class': 'hlFld-Title'})
         return titles[0]['content']
 
