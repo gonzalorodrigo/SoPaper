@@ -20,14 +20,16 @@ from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import StaleElementReferenceException
 
-HOSTNAME = 'www.ncbi.nlm.nih.gov'
+HOSTNAME = 'onlinelibrary.wiley.com/'
 
 # not working right now
-@register_parser(name='www.ncbi.nlm.nih.gov', urlmatch='nih.gov',
+@register_parser(name='onlinelibrary.wiley.com/',
+                 urlmatch='onlinelibrary.wiley.com/',
                  meta_field=[],
                  priority=8)
-class NIH(ScienceDirect):
+class WILEY(ScienceDirect):
     def _do_pre_parse(self):
         self.text = requests.get(self.url).text.encode('utf-8')
         with open("/tmp/b.html", 'w') as f:
@@ -44,32 +46,23 @@ class NIH(ScienceDirect):
         browser.get(url)
         main_window = browser.current_window_handle
         
-        elements = browser.find_elements_by_tag_name("img")
-        pub_med_element = None
+        elements = browser.find_elements_by_tag_name("a")
         pdf_url=""
+        print("WILEY")
         for elem in elements:
-            title_att = elem.get_attribute("title")
-            if title_att and "Read full text in PubMed Central" in title_att:
-                pub_med_element=elem
-        if pub_med_element:
-            elem.click()
-            time.sleep(inter_wait)
-            browser.switch_to_window(browser.window_handles[1])
-            elements = browser.find_elements_by_class_name("format-menu")
-            if elements:
-                elem = elements[0]
-                elements = elem.find_elements_by_tag_name("a")
-                for elem in elements:
-                    href = elem.get_attribute("href")
-                    if (len(href)>10 and "/pmc/articles/" in href and
-                        href[-4:]==".pdf"):
-                        elem.click()
-                        time.sleep(inter_wait)
-                        pdf_url = browser.current_url
-                        break
+            alt_att =  elem.get_attribute("title")
+            if alt_att == "Article ePDF":
+                href = elem.get_attribute("href")
+                print("SECOND URL", href)
+
+                split_url = href.split("epdf")
+                href = "pdf".join(split_url)
+                pdf_url=href
+                break
+        
         browser.quit()
         display.stop()
-        print("nih.gov parser, url: {}".format(pdf_url))
+        print("wiley.com parser, url: {}".format(pdf_url))
         if pdf_url=="":
             raise RecoverableErr("No available download at {0}".format(
                                  self.url))
