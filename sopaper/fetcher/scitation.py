@@ -59,6 +59,13 @@ class SCITATION(ScienceDirect):
             for a_elem in elements.find_elements_by_tag_name("a"):
                 pdf_url  = a_elem.get_attribute("href")
                 break
+
+        if not pdf_url:
+            for keyword in ["full", "abs", "am-pdf"]:
+                if keyword in url:
+                    pdf_url = "pdf".join(url.split(keyword))
+                    break
+            
             
         
         browser.quit()
