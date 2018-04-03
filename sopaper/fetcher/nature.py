@@ -22,11 +22,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 
-HOSTNAME = 'aip.scitation.org/'
+HOSTNAME = 'www.nature.com/'
 
 # not working right now
-@register_parser(name='scitation.org',
-                 urlmatch='scitation.org',
+@register_parser(name='nature.com',
+                 urlmatch='nature.com',
                  meta_field=[],
                  priority=8)
 class SCITATION(ScienceDirect):
@@ -50,25 +50,14 @@ class SCITATION(ScienceDirect):
         browser = webdriver.Firefox()
         browser.get(url)
         main_window = browser.current_window_handle
-        pdf_url =""
-        elements = browser.find_elements_by_class_name(
-            "download-pdf inline-block")
-        for elem in elements:
-            for a_elem in elements.find_elements_by_tag_name("a"):
-                pdf_url  = a_elem.get_attribute("href")
-                break
 
-        if not pdf_url:
-            for keyword in ["full", "abs", "am-pdf"]:
-                if keyword in url:
-                    pdf_url = "pdf".join(url.split(keyword))
-                    break
-            
-            
-        
+        curr_url = browser.current_url
+
+        pdf_url = curr_url+".pdf"
+                
         browser.quit()
         display.stop()
-        print("rsc.org parser, url: {}".format(pdf_url))
+        print("nature.com parser, url: {}".format(pdf_url))
         if pdf_url=="":
             raise RecoverableErr("No available download at {0}".format(
                                  self.url))
@@ -81,10 +70,7 @@ class SCITATION(ScienceDirect):
     def _do_get_title(self):
         """class="hlFld-Title" """
         return ""
-        titles = self.soup.findAll(attrs={'class': 'hlFld-Title'})
-        if titles:
-            return titles[0]['content']
-        return ""
+       
 
     def _do_get_meta(self):
         meta = {}
